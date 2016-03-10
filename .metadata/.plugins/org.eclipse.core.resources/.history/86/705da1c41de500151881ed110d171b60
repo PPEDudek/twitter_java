@@ -1,0 +1,56 @@
+package ppe.favre.twittertimeline.java.com;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class Graphical extends JFrame {
+/*	public void run() {
+		TimelineWindo
+	}*/
+	public Graphical() {
+		super();
+		build();
+	}
+	
+	private void build() {
+		setTitle("Twitter Timeline");
+		setSize(800,600);
+		setLocationRelativeTo(null);
+		setResizable(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setContentPane(buildContentPanel());
+	}
+	
+	private JPanel buildContentPanel() {
+		Json test = new Json();
+		JFrame frame = new JFrame("Twitter Timeline 2");
+
+		// Create our different component
+		JButton button = new JButton("Rafraîchir");	
+		button.setPreferredSize(new Dimension(150,50));
+		JLabel labelDate = null;
+		JLabel labelName = null;
+		JLabel labelText = null;
+		
+		for(int e = 0; e < Json.array.size(); e++) {
+			labelDate = new JLabel(Json.array.get(e).getDate());
+			labelName = new JLabel(Json.array.get(e).getName());
+			labelText = new JLabel(Json.array.get(e).getText());
+		}
+		
+		BoxLayout boxLayout = new BoxLAyout(frame.getContentPane(), BoxLayout.Y_AXIS);
+		frame.setLayout(boxLayout);
+		
+		return content;
+	}
+}

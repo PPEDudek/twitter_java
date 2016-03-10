@@ -1,0 +1,25 @@
+package ppe.favre.twittertimeline.java.com;
+
+import java.io.IOException;
+
+import javax.swing.SwingUtilities;
+
+import org.json.JSONException;
+
+public class TwitterTimeline {
+
+	public static void main(String[] args) throws JSONException, IOException {
+		// Read and Parse JSON
+		Json timeline = new Json();		
+		timeline.ReadJson();
+		
+		// Graphical Interface
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				Graphical graphical = new Graphical();
+				graphical.setVisible(true);
+			}
+		});
+	}
+
+}

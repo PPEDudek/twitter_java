@@ -1,0 +1,70 @@
+package ppe.favre.twittertimeline.java.com;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class Json {
+
+	static JSONArray jobj = null;
+	static String json = "";
+	
+	public JSONArray ReadJson () throws IOException, JSONException {
+		// Read Json file for test
+		
+		BufferedReader reader = new BufferedReader(new FileReader("E:/Utilisateur/Documents/PPE B2/home.json"));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		try {
+			while ((line =reader.readLine())!= null) {
+				sb.append(line+"\n");
+			}
+			json = sb.toString();
+			try {
+				jobj = new JSONArray(json);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ParseJson();
+		reader.close();
+		return jobj;
+	}
+	
+	public void ParseJson () throws JSONException {
+		Tweet tweet = new Tweet();
+		/*
+		 * 	Parsing of Json
+		 */
+		JSONArray jsonarray = new JSONArray(json);
+		for(int i = 0; i < jsonarray.length(); i++) {
+			
+			//Récupération premier tweet
+			JSONObject tweetObj = jsonarray.getJSONObject(i);
+			tweet.setDate(tweetObj.getString("created_at"));
+			tweet.setTweetId(tweetObj.getInt("id"));
+			tweet.setText(tweetObj.getString("text"));
+			
+			// Récupération premier tweet -> user 
+			JSONObject userObj = tweetObj.getJSONObject("user");
+			tweet.setUserId(userObj.getInt("id"));
+			tweet.setName(userObj.getString("name"));
+			tweet.setAvatar(userObj.getString("profile_image_url"));
+			
+			System.out.println("---------  TWEET  -----------");
+			System.out.println("UserId: " + tweet.getUserId() + "   Nom: " + tweet.getName());
+			System.out.println(tweet.getDate());
+			System.out.println("TweetId: " + tweet.getTweetId() + "   Texte: " + tweet.getText());
+			System.out.println();
+			System.out.println();
+		}
+	}
+}
