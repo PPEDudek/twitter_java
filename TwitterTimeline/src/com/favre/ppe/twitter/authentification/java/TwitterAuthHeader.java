@@ -44,7 +44,7 @@ public class TwitterAuthHeader {
 	static String oauthSignatureMethod = "HMAC-SHA1";
 	
 
-	public String encoding(String value) {
+	public String encode(String value) {
 	  String encoded = null;
         try {
             encoded = URLEncoder.encode(value, "UTF-8");

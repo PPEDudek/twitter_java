@@ -38,7 +38,7 @@ public class Json {
 	public JSONArray ReadJson () throws IOException, JSONException {
 		// Read Json file for test
 		
-		BufferedReader reader = new BufferedReader(new FileReader("E:/Utilisateur/Documents/PPE B2/home.json"));
+		BufferedReader reader = new BufferedReader(new FileReader("ressource/home.json"));
 		StringBuilder sb = new StringBuilder();
 
 		String line = null;
@@ -55,7 +55,6 @@ public class Json {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ParseJson();
 		reader.close();
 		return jobj;
 	}
