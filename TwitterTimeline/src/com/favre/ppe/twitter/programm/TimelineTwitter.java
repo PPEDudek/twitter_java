@@ -5,17 +5,20 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import org.json.JSONException;
+
 import com.favre.ppe.twitter.authentification.java.TwitterAuthHeader;
 import com.favre.ppe.twitter.gui.java.MainWindow;
+import com.favre.ppe.twitter.json.java.Json;
 
 public class TimelineTwitter {
 
-	public static void main(String[] args) throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException, IOException {
+	public static void main(String[] args) throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException, IOException, JSONException {
 		// TODO Auto-generated method stub
-		MainWindow mw = new MainWindow();
-		
 		TwitterAuthHeader tah = new TwitterAuthHeader();
-		tah.getTwitterAuth();
+		Json json = new Json();
+		json.ReadJson(tah.getTwitterAuth()); 
+		MainWindow mw = new MainWindow(json);
 	}
 
 }

@@ -1,34 +1,19 @@
 package com.favre.ppe.twitter.authentification.java;
 
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Base64;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Random;
 import java.util.UUID;
-
 import javax.crypto.Mac;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
-import org.apache.commons.*;
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import java.util.Date;
-
 
 public class TwitterAuthHeader {
 	
@@ -40,7 +25,8 @@ public class TwitterAuthHeader {
 	private static String oauthVersion = "1.0";
 	private static String oauthSignatureMethod = "HMAC-SHA1";
 	private String oauthSignature = "";
-	private String resourceUrl = "https://api.twitter.com/1.1/statuses/user_timeline.json";
+	private String resourceUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json";
+	private String updateUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json";
 	
 	public String uriEscape(String s) {
 		try {
@@ -50,8 +36,7 @@ public class TwitterAuthHeader {
 		}
 	}
 	
-	public void getTwitterAuth() throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, IOException {
-		Locale local = new Locale("fr", "FR");
+	public StringBuilder getTwitterAuth() throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, IOException {
 		
 		// Creation oauth_nonce
 		String uuid_string = UUID.randomUUID().toString();
@@ -106,6 +91,8 @@ public class TwitterAuthHeader {
 				finalToken, 
 				finalSignature, 
 				finalVersion);
+		StringBuilder inputRequest = null;
+		BufferedReader in = null;
 		try {
 			HttpsURLConnection request = (HttpsURLConnection)new URL(this.resourceUrl).openConnection();
 			request.setDoInput(true);
@@ -118,9 +105,27 @@ public class TwitterAuthHeader {
 		
 			System.out.println(request.getResponseCode());
 			System.out.println(request.getResponseMessage());
-			System.out.println(request);
+		    int status = request.getResponseCode();
+			switch (status) {
+	            case 200:
+	            case 201:
+	                BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+	                StringBuilder sb = new StringBuilder();
+	                String line;
+	                while ((line = br.readLine()) != null) {
+	                    sb.append(line+"\n");
+	                }
+	                br.close();
+	    			inputRequest = sb;
+	        }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return inputRequest;
 	}	
+	
+	public StringBuilder TwitterRefresh() {
+		
+		return null;
+	}
 }	

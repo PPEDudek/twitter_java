@@ -2,18 +2,25 @@ package com.favre.ppe.twitter.gui.java;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+
+import org.json.JSONException;
+
+import com.favre.ppe.twitter.authentification.java.TwitterAuthHeader;
 import com.favre.ppe.twitter.json.java.Json;
 import com.favre.ppe.twitter.tweet.java.Tweet;
 
@@ -21,17 +28,17 @@ public class MainWindow extends JFrame {
 	private JPanel mainContainer;
 	private JPanel header;
 	
-	public MainWindow() {
+	public MainWindow(Json json) {
 		this.setTitle("Twitter Timeline");
 		this.setSize(1200, 1200);
 		this.setResizable(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setContentPane(this.getJPanel());
+		this.setContentPane(this.getJPanel(json));
 		pack();
 		this.setVisible(true);
 	}
 	
-	public JPanel getJPanel() {
+	public JPanel getJPanel(Json json) {
 		mainContainer = new JPanel(new BorderLayout());
 		
 		JMenuBar menuBar= new JMenuBar();
@@ -47,10 +54,38 @@ public class MainWindow extends JFrame {
 		JButton refresh = new JButton();
 		refresh.setPreferredSize(new Dimension(150,80));
 		refresh.setText("Refresh");
+		refresh.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				TwitterAuthHeader tah = new TwitterAuthHeader();
+				Json json = new Json();
+				try {
+					tah.getTwitterAuth();
+					json.ReadJson(tah.getTwitterAuth());
+					MainWindow mw = new MainWindow(json);
+				} catch (InvalidKeyException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (NoSuchAlgorithmException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		header.add(refresh);
 
 		
-		Json json = new Json();	
 		ArrayList<Tweet> tweets = new ArrayList<>();
 		tweets = json.getTweets();
 

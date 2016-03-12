@@ -1,14 +1,7 @@
 package com.favre.ppe.twitter.gui.java;
 
-import java.awt.FlowLayout;
-import java.awt.Image;
-import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
 

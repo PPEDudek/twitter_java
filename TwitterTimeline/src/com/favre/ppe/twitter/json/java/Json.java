@@ -1,14 +1,14 @@
 package com.favre.ppe.twitter.json.java;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.favre.ppe.twitter.tweet.java.Tweet;
 
 public class Json {
@@ -18,40 +18,10 @@ public class Json {
 	
 	private ArrayList<Tweet> tweets = new ArrayList<>();	
 
-	public Json() {
-		try {
-			ReadJson();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
 	
-	public JSONArray ReadJson () throws IOException, JSONException {
-		// Read Json file for test
-		
-		BufferedReader reader = new BufferedReader(new FileReader("E:/Utilisateur/Documents/PPE B2/home.json"));
-		StringBuilder sb = new StringBuilder();
-
-		String line = null;
-		try {
-			while ((line =reader.readLine())!= null) {
-				sb.append(line+"\n");
-			}
-			json = sb.toString();
-			try {
-				jobj = new JSONArray(json);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public JSONArray ReadJson(StringBuilder response) throws IOException, JSONException {
+		json = response.toString();
 		ParseJson();
-		reader.close();
 		return jobj;
 	}
 	
@@ -88,13 +58,9 @@ public class Json {
 	
 	
 	/*
-	 * GETTERS 
+	 * GETTERS & SETTERS
 	 * 
-	 */
-	
-	
-	
-	
+	 */	
 	public ArrayList<Tweet> getTweets() {
 		return tweets;
 	}
