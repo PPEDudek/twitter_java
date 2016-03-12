@@ -28,17 +28,12 @@ public class Json {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		try {
-			ParseJson();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
+	
 	public JSONArray ReadJson () throws IOException, JSONException {
 		// Read Json file for test
 		
-		BufferedReader reader = new BufferedReader(new FileReader("ressource/home.json"));
+		BufferedReader reader = new BufferedReader(new FileReader("E:/Utilisateur/Documents/PPE B2/home.json"));
 		StringBuilder sb = new StringBuilder();
 
 		String line = null;
@@ -55,6 +50,7 @@ public class Json {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		ParseJson();
 		reader.close();
 		return jobj;
 	}

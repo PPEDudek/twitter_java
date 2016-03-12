@@ -15,7 +15,7 @@ public class TimelineTwitter {
 		MainWindow mw = new MainWindow();
 		
 		TwitterAuthHeader tah = new TwitterAuthHeader();
-		tah.getTwitterAuthHeader();
+		tah.getTwitterAuth();
 	}
 
 }
