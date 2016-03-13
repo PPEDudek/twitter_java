@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.favre.ppe.twitter.tweet.java.Tweet;
 
 public class Json {
@@ -18,14 +17,15 @@ public class Json {
 	
 	private ArrayList<Tweet> tweets = new ArrayList<>();	
 
-	
+	public Json() {}
+	public Json(StringBuilder twitterAuth) {}
+
 	public JSONArray ReadJson(StringBuilder response) throws IOException, JSONException {
 		json = response.toString();
-		ParseJson();
 		return jobj;
 	}
 	
-	public void ParseJson () throws JSONException {
+	public ArrayList<Tweet> ParseJson () throws JSONException {
 		String tempDate = "";
 		String tempText = "";
 		String tempName = "";
@@ -36,7 +36,8 @@ public class Json {
 		 * 	Parsing of Json
 		 */
 		JSONArray jsonarray = new JSONArray(json);
-
+		ArrayList<Tweet> listTweet = new ArrayList<Tweet>();
+		
 		for(int i = 0; i < jsonarray.length(); i++) {
 
 			//Récupération premier tweet
@@ -51,9 +52,10 @@ public class Json {
 			tempScreen_name = userObj.getString("screen_name");
 			tempAvatar = userObj.getString("profile_image_url");
 			
-			Tweet tweet = new Tweet(tempDate, tempText, tempName, tempScreen_name, tempAvatar);
-			this.tweets.add(tweet);
+			listTweet.add(new Tweet(tempDate, tempText, tempName, tempScreen_name, tempAvatar));
+			
 		}
+		return listTweet;
 	}
 	
 	

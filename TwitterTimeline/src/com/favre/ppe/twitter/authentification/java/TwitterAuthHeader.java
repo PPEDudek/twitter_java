@@ -123,9 +123,4 @@ public class TwitterAuthHeader {
 		}
 		return inputRequest;
 	}	
-	
-	public StringBuilder TwitterRefresh() {
-		
-		return null;
-	}
 }	

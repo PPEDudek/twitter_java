@@ -27,8 +27,10 @@ import com.favre.ppe.twitter.tweet.java.Tweet;
 public class MainWindow extends JFrame {
 	private JPanel mainContainer;
 	private JPanel header;
+	private static JTable tweetsTable;
+	private ArrayList<Tweet> tweets;
 	
-	public MainWindow(Json json) {
+	public MainWindow(Json json) throws JSONException {
 		this.setTitle("Twitter Timeline");
 		this.setSize(1200, 1200);
 		this.setResizable(true);
@@ -38,8 +40,14 @@ public class MainWindow extends JFrame {
 		this.setVisible(true);
 	}
 	
-	public JPanel getJPanel(Json json) {
+	@SuppressWarnings("null")
+	public JPanel getJPanel(Json json) throws JSONException {
 		mainContainer = new JPanel(new BorderLayout());
+		tweets = json.ParseJson();
+		tweetsTable = new JTable (new TweetModel(tweets));
+		JScrollPane scroll = new JScrollPane(tweetsTable);
+		tweetsTable.setRowHeight(150);
+		mainContainer.add(scroll);
 		
 		JMenuBar menuBar= new JMenuBar();
 		this.setJMenuBar(menuBar);
@@ -60,23 +68,30 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				TwitterAuthHeader tah = new TwitterAuthHeader();
-				Json json = new Json();
+				Json refreshJson = null;
 				try {
-					tah.getTwitterAuth();
-					json.ReadJson(tah.getTwitterAuth());
-					MainWindow mw = new MainWindow(json);
-				} catch (InvalidKeyException e1) {
+					
+					refreshJson = new Json();
+					refreshJson.ReadJson(tah.getTwitterAuth());
+
+					ArrayList<Tweet> twitterUpdate;
+					twitterUpdate = refreshJson.ParseJson();
+	
+					tweetsTable.setModel(new TweetModel(twitterUpdate));
+					tweetsTable.getColumnModel().getColumn(0).setHeaderValue("Twitter Timeline Refresh");
+					
+				} catch (InvalidKeyException e3) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (NoSuchAlgorithmException e1) {
+					e3.printStackTrace();
+				} catch (NoSuchAlgorithmException e3) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (URISyntaxException e1) {
+					e3.printStackTrace();
+				} catch (URISyntaxException e3) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
+					e3.printStackTrace();
+				} catch (IOException e3) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e3.printStackTrace();
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -85,15 +100,6 @@ public class MainWindow extends JFrame {
 		});
 		header.add(refresh);
 
-		
-		ArrayList<Tweet> tweets = new ArrayList<>();
-		tweets = json.getTweets();
-
-		JTable tweetsTable = new JTable (new TweetModel(tweets));
-		JScrollPane scroll = new JScrollPane(tweetsTable);
-				
-		tweetsTable.setRowHeight(150);
-		mainContainer.add(scroll);
 		this.mainContainer.add(header, BorderLayout.NORTH);
 		header.setVisible(true);
 		return mainContainer;
