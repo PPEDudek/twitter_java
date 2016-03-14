@@ -34,8 +34,7 @@ public class TwitterApi {
 	private static String oauthSignatureMethod = "HMAC-SHA1";
 	private String oauthSignature = "";
 	private String compositeKey = "";
-	private String resourceUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json";
-	private String searchUrl = "https://api.twitter.com/1.1/search/tweets.json";
+	
 	private String finalTimestamp = "";
 	private String finalNonce = "";
 	private String finalSignatureMethod = "";
@@ -45,6 +44,12 @@ public class TwitterApi {
 	private String finalConsumerKey = "";
 	private String headerFormat = "";
 	private JSONArray searchArray = null;
+	
+	private String resourceUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json";
+	private String searchUrl = "https://api.twitter.com/1.1/search/tweets.json";
+	private String userUrl = "https://api.twitter.com/1.1/account/verify_credentials.json";
+    private StringBuffer sb = null;
+    JSONObject jo = null;
 	
 	public String uriEscape(String s) {
 		try {
@@ -235,4 +240,93 @@ public class TwitterApi {
 			}
 		return searchRequest;
 	}	
+
+	public JSONObject userInfo() throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+		// Creation oauth_nonce
+		String uuid_string = UUID.randomUUID().toString();
+		uuid_string = uuid_string.replaceAll("-", "");
+		String oauthNonce = uuid_string;
+		
+		// Creation oauth_timestamp
+		Long timestamp = System.currentTimeMillis();
+		timestamp = timestamp/1000;		
+		String oauthTimeStamp = Long.toString(timestamp);
+			
+		// Creation baseFormat
+		String baseFormat = "oauth_consumer_key=%s&oauth_nonce=%s&oauth_signature_method=%s&oauth_timestamp=%s&oauth_token=%s&oauth_version=%s";		
+		String tempBaseFormat = String.format(baseFormat,
+				oauthConsumerKey, 
+				oauthNonce, 
+				oauthSignatureMethod, 
+				oauthTimeStamp, 
+				oauthToken, 
+				oauthVersion);
+		
+		String baseStringTemp = "";
+		String baseString = baseStringTemp.concat(uriEscape("GET")).concat("&").concat(uriEscape(userUrl)).concat("&").concat(uriEscape((tempBaseFormat)));
+
+		
+		//Creation oauth_signature
+		String compositeKeyTemp = "";
+		compositeKey = compositeKeyTemp.concat(uriEscape(oauthConsumerSecret)).concat("&").concat(uriEscape(oauthSecretToken));	
+		Mac m = Mac.getInstance("HmacSHA1");
+		SecretKeySpec signinKey = new SecretKeySpec(compositeKey.getBytes("UTF-8"), "HmacSHA1");
+	    m.init(signinKey);
+		byte[] signature = m.doFinal(baseString.getBytes("UTF-8"));
+		oauthSignature = new String(Base64.getEncoder().encode(signature)).trim();
+
+		// Encoding variable
+		finalTimestamp = uriEscape(oauthTimeStamp);
+		finalNonce = uriEscape(oauthNonce);
+		finalSignatureMethod = uriEscape(oauthSignatureMethod);
+		finalSignature = uriEscape(oauthSignature);
+		finalToken = uriEscape(oauthToken);
+	    finalVersion = uriEscape(oauthVersion);
+	    finalConsumerKey = uriEscape(oauthConsumerKey);
+		
+	    // Creation headerFormat
+	    headerFormat = "OAuth oauth_nonce=%s, oauth_signature_method=%s, oauth_timestamp=%s, oauth_consumer_key=%s, oauth_token=%s, oauth_signature=%s, oauth_version=%s";
+
+		String tempHeaderFormat = String.format(headerFormat, 
+				finalNonce, 
+				finalSignatureMethod, 
+				finalTimestamp, 
+				finalConsumerKey, 
+				finalToken, 
+				finalSignature, 
+				finalVersion);
+
+		StringBuilder inputRequest = null;
+		try {
+			HttpsURLConnection request = (HttpsURLConnection)new URL(this.userUrl).openConnection();
+			request.setDoInput(true);
+			request.setDoOutput(true);
+			request.setRequestProperty("Authorization", tempHeaderFormat);
+			request.setRequestMethod("GET");
+			request.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
+			request.addRequestProperty("Content-type", "charset=UTF-8");
+			request.addRequestProperty("Host", "https://apit.twitter.com");
+			
+			//DEBUG
+			System.out.println();
+			System.out.println("Twitter user request :");
+			System.out.println(request.getResponseCode());
+			System.out.println(request.getResponseMessage());
+
+
+	        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+
+	        String line;
+	        sb = new StringBuffer();
+	        while ((line = br.readLine()) != null) {
+	        	sb.append(line);
+	        }
+	        jo = new JSONObject(sb.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return jo;
+	}
+
 }	

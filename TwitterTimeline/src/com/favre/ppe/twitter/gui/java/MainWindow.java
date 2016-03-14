@@ -5,12 +5,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -20,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.favre.ppe.twitter.authentification.java.TwitterApi;
 import com.favre.ppe.twitter.json.java.Json;
@@ -31,6 +34,7 @@ public class MainWindow extends JFrame {
 	private static JTable tweetsTable;
 	private static JTable searchTable;
 	private ArrayList<Tweet> tweets;
+	JLabel userInfo = null;
 	
 	public MainWindow(Json json) throws JSONException {
 		this.setTitle("Twitter Timeline");
@@ -52,15 +56,8 @@ public class MainWindow extends JFrame {
 		tweetsTable = new JTable (new TweetModel(tweets));
 		JScrollPane scroll = new JScrollPane(tweetsTable);
 		tweetsTable.setRowHeight(150);
+		tweetsTable.setTableHeader(null);
 		mainContainer.add(scroll);
-		
-		JMenuBar menuBar= new JMenuBar();
-		this.setJMenuBar(menuBar);
-		
-		JMenu file = new JMenu("File");
-		file.add(new JMenuItem("Open"));
-		file.add(new JMenuItem("Exit"));
-		menuBar.add(file);
 		
 		header = new JPanel(new BorderLayout());
 		
@@ -86,7 +83,7 @@ public class MainWindow extends JFrame {
 					twitterUpdate = refreshJson.ParseJson();
 	
 					tweetsTable.setModel(new TweetModel(twitterUpdate));
-					tweetsTable.getColumnModel().getColumn(0).setHeaderValue("Twitter Timeline Refresh");
+					tweetsTable.setTableHeader(null);
 					
 				} catch (InvalidKeyException e3) {
 					// TODO Auto-generated catch block
@@ -129,7 +126,7 @@ public class MainWindow extends JFrame {
 					twitterSearch = searchJson.ParseJson();
 					
 					tweetsTable.setModel(new TweetModel(twitterSearch));
-					tweetsTable.getColumnModel().getColumn(0).setHeaderValue("Twitter Timeline Search");
+					tweetsTable.setTableHeader(null);
 				} catch (InvalidKeyException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -147,12 +144,35 @@ public class MainWindow extends JFrame {
 			
 		});
 		
+		try {
+			this.userInfo = userAccount();
+		} catch (InvalidKeyException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (NoSuchAlgorithmException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (UnsupportedEncodingException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+			
+		header.add(userInfo, BorderLayout.NORTH);
 		header.add(textField, BorderLayout.CENTER);
 		header.add(search, BorderLayout.WEST);
 		header.add(refresh, BorderLayout.AFTER_LAST_LINE);
 		this.mainContainer.add(header, BorderLayout.NORTH);
 		header.setVisible(true);
 		return mainContainer;
+	}
+	
+	public JLabel userAccount() throws JSONException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+		TwitterApi ta = new TwitterApi();
+		JSONObject jsonObj = new JSONObject();
+		jsonObj = ta.userInfo();
+		Json json  = new Json();
+		JLabel userLabel = new JLabel();
+		return userLabel = json.ParseJsonUser(jsonObj);
 	}
 	
 }
