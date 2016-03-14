@@ -1,9 +1,6 @@
 package com.favre.ppe.twitter.json.java;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,9 +13,6 @@ public class Json {
 	static String json = "";
 	
 	private ArrayList<Tweet> tweets = new ArrayList<>();	
-
-	public Json() {}
-	public Json(StringBuilder twitterAuth) {}
 
 	public JSONArray ReadJson(StringBuilder response) throws IOException, JSONException {
 		json = response.toString();
@@ -52,8 +46,7 @@ public class Json {
 			tempScreen_name = userObj.getString("screen_name");
 			tempAvatar = userObj.getString("profile_image_url");
 			
-			listTweet.add(new Tweet(tempDate, tempText, tempName, tempScreen_name, tempAvatar));
-			
+			listTweet.add(new Tweet(tempDate, tempText, tempName, tempScreen_name, tempAvatar));			
 		}
 		return listTweet;
 	}

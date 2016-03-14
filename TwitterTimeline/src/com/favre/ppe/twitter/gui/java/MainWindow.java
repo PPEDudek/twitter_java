@@ -17,10 +17,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import org.json.JSONException;
 
-import com.favre.ppe.twitter.authentification.java.TwitterAuthHeader;
+import com.favre.ppe.twitter.authentification.java.TwitterApi;
 import com.favre.ppe.twitter.json.java.Json;
 import com.favre.ppe.twitter.tweet.java.Tweet;
 
@@ -28,6 +29,7 @@ public class MainWindow extends JFrame {
 	private JPanel mainContainer;
 	private JPanel header;
 	private static JTable tweetsTable;
+	private static JTable searchTable;
 	private ArrayList<Tweet> tweets;
 	
 	public MainWindow(Json json) throws JSONException {
@@ -40,7 +42,10 @@ public class MainWindow extends JFrame {
 		this.setVisible(true);
 	}
 	
-	@SuppressWarnings("null")
+	public MainWindow() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public JPanel getJPanel(Json json) throws JSONException {
 		mainContainer = new JPanel(new BorderLayout());
 		tweets = json.ParseJson();
@@ -59,16 +64,19 @@ public class MainWindow extends JFrame {
 		
 		header = new JPanel(new BorderLayout());
 		
+		JTextField textField = new JTextField(7);
+		textField.setText("Search");
+		
 		JButton refresh = new JButton();
-		refresh.setPreferredSize(new Dimension(150,80));
 		refresh.setText("Refresh");
 		refresh.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				TwitterAuthHeader tah = new TwitterAuthHeader();
+				TwitterApi tah = new TwitterApi();
 				Json refreshJson = null;
+
 				try {
 					
 					refreshJson = new Json();
@@ -98,8 +106,49 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-		header.add(refresh);
+		
+		JButton search = new JButton();
+		search.setText("Search");
+		search.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				MainWindow test = new MainWindow();
+				TwitterApi tah = new TwitterApi();
+				Json searchJson = null;
+				
+				String textIn = textField.getText();
+				System.out.println(textIn);
+				
+				try {
+					searchJson = new Json();
+					searchJson.ReadJson(tah.searchTweet(textIn));
+					
+					ArrayList<Tweet> twitterSearch;
+					twitterSearch = searchJson.ParseJson();
+					
+					MainWindow mw = new MainWindow(searchJson);
+				} catch (InvalidKeyException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				} catch (NoSuchAlgorithmException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				} catch (IOException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+		});
+		
+		header.add(textField, BorderLayout.CENTER);
+		header.add(search, BorderLayout.WEST);
+		header.add(refresh, BorderLayout.AFTER_LAST_LINE);
 		this.mainContainer.add(header, BorderLayout.NORTH);
 		header.setVisible(true);
 		return mainContainer;
