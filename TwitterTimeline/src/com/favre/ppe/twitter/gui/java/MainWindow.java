@@ -128,7 +128,8 @@ public class MainWindow extends JFrame {
 					ArrayList<Tweet> twitterSearch;
 					twitterSearch = searchJson.ParseJson();
 					
-					MainWindow mw = new MainWindow(searchJson);
+					tweetsTable.setModel(new TweetModel(twitterSearch));
+					tweetsTable.getColumnModel().getColumn(0).setHeaderValue("Twitter Timeline Search");
 				} catch (InvalidKeyException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
